@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EliteCart</title>
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f4f4f4;
+    }
+    header {
+      background-color: #333;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 50px;
+    }
+    .logo img {
+      height: 150px;
+    }
+    nav a, nav select {
+      margin-left: 15px;
+      color: white;
+      text-decoration: none;
+      font-size: 1rem;
+    }
+    nav select {
+      background: #444;
+      border: none;
+      padding: 5px;
+      border-radius: 5px;
+    }
+    button, select {
+      padding: 10px;
+      margin: 10px 5px;
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button {
+      background: #3b0bbe;
+      color: white;
+    }
+    button:hover {
+      background: #3b0bbe;
+    }
+    .category-grid, .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+    .category-card, .product-card {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+    }
+    .category-card img, .product-card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .hidden {
+      display: none;
+    }
+    footer {
+      background: #222;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    .active {
+      display: block;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.3s;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .card h3 {
+      margin: 15px 0 10px;
+    }
+    .btn {
+      background: #3b0bbe;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      margin-right: 5px;
+    }
+    .btn:hover {
+      background: #29107d;
+    }
+    #cartIcon {
+      position: fixed;
+      right: 20px;
+      top: 80px;
+      background: #e91e63;
+      color: white;
+      border-radius: 50%;
+      padding: 15px;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      font-weight: bold;
+      z-index: 20;
+    }
+    #cart {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    #cart h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .cart-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .cart-item img {
+      width: 80px;
+      height: 80px;
+      border-radius: 10px;
+      object-fit: cover;
+      margin-right: 15px;
+    }
+    .cart-item h4 {
+      flex: 1;
+    }
+    .cart-item button {
+      background: #e53935;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">
+    <img src="C:\Users\Chandini\OneDrive\Desktop\Ecommerce\Elite Cart.png" height="200" width="150">
+  </div>
+  <nav>
+    <a href="#" onclick="showHome()">Home</a>
+    <select onchange="selectCategory(this.value)">
+      <option value="">Categories</option>
+      <option value="electronics">Electronics</option>
+      <option value="fashion">Fashion</option>
+      <option value="books">Books</option>
+      <option value="home">Home</option>
+      <option value="beauty">Beauty</option>
+      <option value="sports">Sports</option>
+      <option value="toys">Toys</option>
+      <option value="grocery">Grocery</option>
+      <option value="automotive">Automotive</option>
+      <option value="pets">Pets</option>
+    </select>
+    <a href="#" onclick="showSection('about')">About Us</a>
+    <a href="#" onclick="showSection('contact')">Contact</a>
+  </nav>
+  <div>
+    <button onclick="openLogin()">Login / Signup</button>
+    <button onclick="logOut()">Logout</button>
+  </div>
+</header>
+
+<div id="home" class="category-grid"></div>
+<div id="products" class="product-grid hidden"></div>
+<div id="about" class="hidden p-4">
+  <h2>About Us</h2>
+  <p>Welcome to Elite Cart! We offer the best products in electronics, fashion, books, and more, all at great prices!</p>
+</div>
+
+<!-- Cart Section -->
+<div id="cartPage" class="hidden p-4">
+  <div id="cart">
+    <h2>Your Cart</h2>
+    <div id="cartItems"></div>
+    <h4 class="text-center mt-4">Total Items: <span id="totalItems">0</span></h4>
+  </div>
+</div>
+
+<div id="contact" class="hidden p-4">
+  <h2>Contact Us</h2>
+  <p>Email: support@elitecart.com</p>
+  <p>Phone: +1 (555) 123-4567</p>
+  <p>Address: 123 Market Street, Commerce City, CA 90001</p>
+</div>
+
+<div id="cartIcon" onclick="showSection('cartPage')">
+  <span id="cartCount">0</span> 🛒
+</div>
+
+<footer>
+  <p>&copy; 2025 EliteCart. All rights reserved.</p>
+</footer>
+
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4">
+      <div class="modal-header">
+        <h5 class="modal-title">Login / Signup</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="username" class="form-control mb-2" placeholder="Enter Username" />
+        <input type="password" id="password" class="form-control mb-3" placeholder="Enter Password" />
+        <button class="btn btn-primary w-100 mb-2" onclick="login()">Login</button>
+        <button class="btn btn-secondary w-100" onclick="signup()">Signup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JS Section -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  const users = JSON.parse(localStorage.getItem('users')) || [];
+  let currentUser = localStorage.getItem('currentUser');
+
+  const categories = [
+    { id: "electronics", name: "Electronics", img: "https://i.pinimg.com/736x/fd/56/fe/fd56fe106a889d7842bd4e519a95d5c8.jpg" },
+    { id: "fashion", name: "Fashion", img: "https://img.freepik.com/free-photo/female-friends-out-shopping-together_53876-25041.jpg" },
+    { id: "books", name: "Books", img: "https://img.freepik.com/premium-photo/shopping-cart-with-books_165073-344.jpg" },
+    { id: "home", name: "Home", img: "https://st4.depositphotos.com/1001877/21032/i/450/depositphotos_210322230-stock-photo-set-household-kitchen-technics-yellow.jpg" },
+    { id: "beauty", name: "Beauty", img: "https://content.jdmagicbox.com/comp/def_content/cosmetic-shoppe/screenshot-1-cosmetic-shoppe-1-wzfup.jpg" },
+    { id: "sports", name: "Sports", img: "https://img.freepik.com/free-photo/sports-tools_53876-138077.jpg" },
+    { id: "toys", name: "Toys", img: "https://montgomeryvillageca.com/wp-content/uploads/sites/14/2023/05/Kaleidoscope-Toys-F.jpg" },
+    { id: "grocery", name: "Grocery", img: "https://www.realsimple.com/thmb/_g-ObDaUCSRx4D7yjWHdNdyv4N8=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/time-grocery-shop-1-f64af0ca04c14e3592329072a3f7bdf8.jpg" },
+    { id: "automotive", name: "Automotive", img: "https://st2.depositphotos.com/1001335/10397/i/950/depositphotos_103971628-stock-photo-concept-of-auto-parts-shopping.jpg" },
+    { id: "pets", name: "Pets", img: "https://img.freepik.com/premium-vector/pet-shop-products-set-icons_24877-6290.jpg" },
+  ];
+
+  const products = {
+    electronics: [
+  {name: "Smartphone", image: "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1666000526/Croma%20Assets/CMS/CAtegory/Mobile%20phone%20-%20C10/NEW%20PCP%20DESIGN%20-%20OCT/Updated/MPCP_shopbybrand_tecno27sep2022_qa6e4t.png?tr=w-1000"},
+  {name: "Laptop", image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8"},
+  {name: "Tablet", image: "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1740047413/Croma%20Assets/Computers%20Peripherals/Tablets%20and%20iPads/Images/305699_0_re5pjs.png?tr=w-1000"},
+  {name: "Smartwatch", image: "https://rukminim2.flixcart.com/image/450/500/xif0q/smartwatch/s/i/u/-original-imah76jt64ffmwg4.jpeg?q=90&crop=false"},
+  {name: "Headphones", image: "https://shop.zebronics.com/cdn/shop/products/Zeb-Jet-Pro-pic1.jpg?v=1659157507"},
+  {name: "Camera", image: "https://m.media-amazon.com/images/I/51NR+Auf92L._SR290,290_.jpg"},
+  {name: "Drone", image: "https://m.media-amazon.com/images/I/61yqSTmo71L.jpg"},
+  {name: "Speaker", image: "https://shop.zebronics.com/cdn/shop/files/zeb-Roxor-pro-pic1_e3dc8cfd-333b-4a6f-a22b-f4d51729f3d9.jpg?v=1725450387"},
+  {name: "Monitor", image: "https://www.lg.com/content/dam/channel/wcms/in/images/monitors/27gs60f-b_atr_eail_in_c/gallery/27GS60F-B-DZ-1.jpg/_jcr_content/renditions/thum-1600x1062.jpeg"},
+  {name: "Printer", image: "https://in-media.apjonlinecdn.com/catalog/product/cache/b3b166914d87ce343d4dc5ec5117b502/6/U/6UU48A-1_T1680354480.png"},
+  {name: "Router", image: "https://m.media-amazon.com/images/I/41-DptZ8VKL._SR290,290_.jpg"},
+  {name: "Keyboard", image: "https://rukminim2.flixcart.com/image/450/400/xif0q/keyboard/multi-device-keyboard/g/h/v/ultra-slim-wired-keyboard-ergonomic-responsive-durable-for-work-original-imahahh2wjsahuc2.jpeg?q=90&crop=false"},
+  {name: "Mouse", image: "https://images-cdn.ubuy.co.in/633b72b10224116661793be8-ubuy-online-shopping.jpg"},
+  {name: "Projector", image: "https://shop.zebronics.com/cdn/shop/files/zeb-pixaplay-55-pic1_c294dfd9-64d3-4ca7-bc37-84abd68dfcee.jpg?v=1718707751"},
+  {name: "Hard Drive", image: "https://b2b.shoptec.in/uploads/media/2023/geonix_2_tb.jpg"},
+  {name: "Charger", image: "https://m.media-amazon.com/images/I/61PZgv5ilqL.jpg"},
+  {name: "Power Bank", image: "https://www.boat-lifestyle.com/cdn/shop/files/ES500-FI_Black01__4_-removebg-preview.png?v=1690198681"},
+  {name: "VR Headset", image: "https://m.media-amazon.com/images/I/61LflK9AFxL._AC_UF1000,1000_QL80_.jpg"},
+  {name: "Graphics Card", image: "https://m.media-amazon.com/images/I/51IOUiBKUhL._SR290,290_.jpg"},
+  {name: "Smart Home Device", image: "https://i.pcmag.com/imagery/roundup-groups/051b3JvCaz7TUe9VW12gb2m-6.fit_lim.size_1050x.jpg"}
+],
+
+  fashion: [
+    {name: "T-shirt", image: "https://muselot.in/cdn/shop/products/Shopping-is-my-cardio-printed-T-shirt-in-navy-blue-color-muselot.png?v=1644491284"},
+    {name: "Jeans", image: "https://levi.in/cdn/shop/files/A74550003_3.jpg?v=1727161173&width=1445"},
+    {name: "Sneakers", image: "https://m.media-amazon.com/images/I/5107ttYV3BL._AC_UY1000_.jpg"},
+    {name: "Jacket", image: "https://gokyo.in/cdn/shop/files/K2SURVIR-YELLOW-1.jpg?v=1735298471"},
+    {name: "Dress", image: "https://adn-static1.nykaa.com/nykdesignstudio-images/pub/media/catalog/product/e/4/e43add4N793_1.jpg?rnd=20200526195200&tr=w-512"},
+    {name: "Handbag", image: "https://img.tatacliq.com/images/i22//437Wx649H/MP000000023101379_437Wx649H_202501112231441.jpeg"},
+    {name: "Hat", image: "https://a.storyblok.com/f/132956/2076x710/56c085942e/dad-cap-puff-header.jpg"},
+    {name: "Scarf", image: "https://zouk.co.in/cdn/shop/products/BangaloreBlue1.jpg?v=1691570659&width=1000"},
+    {name: "Watch", image: "https://sylvi.in/cdn/shop/files/SylviTimegrapherBlueDialRosegoldLeatherMainimage800x1000.webp?v=1734668718"},
+    {name: "Belt", image: "https://m.media-amazon.com/images/I/512sw6gqBUL._SR290,290_.jpg"},
+    {name: "Sunglasses", image: "https://woggles.gumlet.io/api/catalog/products/woggles_new_image_9_12_2022/auralite_black_polarized_square_sunglasses_packaging_view_03_04_25.jpg?format=webp&w=480&dpr=2.6"},
+    {name: "Boots", image: "https://assets.ajio.com/medias/sys_master/root/20230621/zIF5/649227a7d55b7d0c6382c5e7/-473Wx593H-463476185-black-MODEL.jpg"},
+    {name: "Blazer", image: "https://rukminim2.flixcart.com/image/550/650/xif0q/blazer/n/y/i/34-black-collection-darbar-in-original-imah3hhqhhh7chth.jpeg?q=90&crop=false"},
+    {name: "Skirt", image: "https://assets.myntassets.com/dpr_1.5,q_60,w_400,c_limit,fl_progressive/assets/images/30075318/2024/6/29/d4e2f89f-31b7-4478-9ad2-904598a57a121719634238855UptownieBoxyPleatedSkirt1.jpg"},
+    {name: "Suit", image: "https://img.tatacliq.com/images/i15//437Wx649H/MP000000020527503_437Wx649H_202312202132491.jpeg"},
+    {name: "Earrings", image: "https://navrathan.com/wp-content/uploads/2024/05/NJJ-GOLD-2239874-a-600x800.jpg"},
+    {name: "Bracelet", image: "https://images-cdn.ubuy.co.in/662126f658ea2b6b44242a83-rhinestone-bridal-bracelet-silver.jpg"},
+    {name: "Ring", image: "https://www.candere.com/media/jewellery/images/C001952__1.jpeg"},
+    {name: "Sweater", image: "https://images.bestsellerclothing.in/data/only/27-dec-2023/140481001_g0.jpg?width=380&height=500&mode=fill&fill=blur&format=auto"},
+    {name: "Shorts", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzDoJdZaLatDjCGW7w37RBZ2tuuWwRkU6L0g&s"}
+  ],
+  books: [
+    {name: "Novel", image: "https://cdn.britannica.com/21/182021-050-666DB6B1/book-cover-To-Kill-a-Mockingbird-many-1961.jpg"},
+    {name: "Biography", image: "https://m.media-amazon.com/images/I/61ngqmu0RFL.jpg"},
+    {name: "Science Fiction", image: "https://m.media-amazon.com/images/I/41aqZYu1ZaL._AC_UF1000,1000_QL80_.jpg"},
+    {name: "Mystery", image: "https://m.media-amazon.com/images/I/712svqH4F6L._AC_UF1000,1000_QL80_.jpg"},
+    {name: "Self-help", image: "https://m.media-amazon.com/images/I/51+AGx6PTdL._AC_UF1000,1000_QL80_.jpg"},
+    {name: "History", image: "https://rukminim2.flixcart.com/image/850/1000/l29c9e80/book/c/d/7/world-history-original-imagdndqceg2cgt4.jpeg?q=90&crop=false"},
+    {name: "Children's Book", image: "https://media1.popsugar-assets.com/files/thumbor/TAl3ppJPztqD8zoPnh-QFw3ePSw=/fit-in/525x800/filters:format_auto():upscale()/2013/01/05/1/192/1922664/70e2c08b0cb9ff8a_charlottes_web.JPG"},
+    {name: "Cookbook", image: "https://cdn.loveandlemons.com/wp-content/uploads/2023/01/cookbook3.jpg"},
+    {name: "Graphic Novel", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRav3d7qxwzLzLGlPYebu5epH1LkYwPI8cIJw&sl"},
+    {name: "Poetry", image: "https://m.media-amazon.com/images/I/719XF8PqCGL._AC_UF1000,1000_QL80_.jpg"},
+    {name: "Thriller", image: "https://m.media-amazon.com/images/I/71fSQq9M+vL._AC_UF1000,1000_QL80_.jpg"},
+    {name: "Fantasy", image: "https://m.media-amazon.com/images/I/515RRb2TekL._AC._SR240,240.jpg"},
+    {name: "Textbook", image: "https://booksandyou.in/cdn/shop/files/PhysicsPartIITextbookforClassXII_1.webp?v=1713763622"},
+    {name: "Romance", image: "https://ew.com/thmb/Fq5b7JKo1L3b3HYhoPzyA3pzVSo=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Technically-Yours-by-Denise-Williams--romance-books-121423-61cae6f7114d48768d32a7c38ba1341b.jpg"},
+    {name: "Art Book", image: "https://m.media-amazon.com/images/I/81CeaB7UVqL._AC_UF1000,1000_QL80_.jpg"},
+    {name: "Photography Book", image: "https://m.media-amazon.com/images/I/51UUkIz0VAS._AC_.jpg"},
+    {name: "Journal", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHYHhOj_HNgIE8AdeP3yXQ6PUwrrdNrvX9hw&s"},
+    {name: "Essay Collection", image: "https://m.media-amazon.com/images/I/71AUnyeUnYL._AC_UF1000,1000_QL80_.jpg"},
+    {name: "Religious Book", image: "https://m.media-amazon.com/images/I/81dAebs8d4L._AC_UF1000,1000_QL80_.jpg"},
+    {name: "Anthology", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHsPE0owZCTy-j5RKZlSwslU5EnIbq1652MQ&s"}
+  ],
+  home:
+  [
+  {name: "Refrigerator", image: "https://havells.com/media/catalog/product/cache/844a913d283fe95e56e39582c5f2767b/import/ref/GLDC242SSST2LC.JPG"},
+  {name: "Washing Machine", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ00COrfsDNFiDVybLAil5ZLg-GVGEC889Eww&s"},
+  {name: "Microwave Oven", image: "https://www.lg.com/content/dam/channel/wcms/in/images/microwave-ovens/mc2886brum_dbkqiln_eail_in_c/gallery/MC2886BRUM-Microwave-ovens-Detail-2-view-DZ-04.jpg"},
+  {name: "Air Conditioner", image: "https://m.media-amazon.com/images/I/71+G7Rr-cBL.jpg"},
+  {name: "Vacuum Cleaner", image: "https://m.media-amazon.com/images/I/51U8bPliBVL.jpg"},
+  {name: "Dishwasher", image: "https://media3.bsh-group.com/Product_Shots/5120x/16386367_J8809_SN25II00TI_STP_16311298_def.webp"},
+  {name: "Water Purifier", image: "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1722273756/Croma%20Assets/Small%20Appliances/Water%20Purifier/Images/212088_0_xvadqo.png"},
+  {name: "Electric Kettle", image: "https://m.media-amazon.com/images/I/51Q11RNy8dL._AC_UF894,1000_QL80_.jpg"},
+  {name: "Blender", image: "https://m.media-amazon.com/images/I/71n3mrnKBTL._AC_UF894,1000_QL80_.jpg"},
+  {name: "Toaster", image: "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1691676058/Croma%20Assets/Small%20Appliances/Toasters%20Sandwich%20Makers/Images/234744_0_wtuotf.png"},
+  {name: "Coffee Maker", image: "https://m.media-amazon.com/images/I/818gyfjYmZL.jpg"},
+  {name: "Ceiling Fan", image: "https://m.media-amazon.com/images/I/21zzyZERKnL._SR290,290_.jpg"},
+  {name: "Iron", image: "https://m.media-amazon.com/images/I/61gKFHMKmoL.jpg"},
+  {name: "Hair Dryer", image: "https://m.media-amazon.com/images/I/619Mu2NY1mL.jpg"},
+  {name: "Heater", image: "https://orientelectric.com/cdn/shop/files/2_2.png?v=1733815446&width=990"},
+  {name: "Food Processor", image: "https://bossindia.com/wp-content/uploads/2019/09/B704_1-600x600.jpg.webp"},
+  {name: "Water Heater", image: "https://indoappliances.com/cdn/shop/files/1_6cf31269-0975-4244-a049-3268543c60b0.png?v=1729336512"},
+  {name: "Air Purifier", image: "https://m.media-amazon.com/images/I/71tKyP04wsL._AC_UF894,1000_QL80_.jpg"},
+  {name: "Hand Mixer", image: "https://m.media-amazon.com/images/I/719Ma759LbS._AC_UF894,1000_QL80_.jpg"},
+  {name: "Portable Fan", image: "https://m.media-amazon.com/images/I/81MREPP2fkL._AC_UF894,1000_QL80_.jpg"}
+],
+
+  sports: [
+    {name: "Football", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7jSe7PA2NMMCzJGqr1u5hkBtJf0yz53u8-w&s"},
+    {name: "Basketball", image: "https://upload.wikimedia.org/wikipedia/commons/7/7a/Basketball.png"},
+    {name: "Tennis Racket", image: "https://m.media-amazon.com/images/I/71M8DZVZZQL.jpg"},
+    {name: "Baseball Bat", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCKrCLDIy6BOT-7nuET7Qbb1Ca5o45nwu0Pg&s"},
+    {name: "Soccer Ball", image: "https://m.media-amazon.com/images/I/61ZNgwdaPtL.jpg"},
+    {name: "Cricket Bat", image: "https://m.media-amazon.com/images/I/41POwIM+VxL.jpg"},
+    {name: "Golf Clubs", image: "https://images-cdn.ubuy.co.in/63526309426e190650276c5a-callaway-edge-10-piece-complete.jpg"},
+    {name: "Swimming Goggles", image: "https://m.media-amazon.com/images/I/61TMyMBwZoL._AC_UF894,1000_QL80_.jpg"},
+    {name: "Hockey Stick", image: "https://images-cdn.ubuy.co.in/633b5675aa077d63f00cfd40-stx-rx-101-field-hockey-stick.jpg"},
+    {name: "Boxing Gloves", image: "https://m.media-amazon.com/images/I/81MThv+hgeS._AC_UF894,1000_QL80_.jpg"},
+    {name: "Cycling Helmet", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTx_RKlNO0yyDuWpChmC9WUC6E5T6X6VbB68A&s"},
+    {name: "Skateboard", image: "https://m.media-amazon.com/images/I/81yh8+MHWHL._AC_UF894,1000_QL80_.jpg"},
+    {name: "Surfboard", image: "https://contents.mediadecathlon.com/p1313419/be6c6d0b4d300f90127588ef389f4ed5/p1313419.jpg"},
+    {name: "Ski Gear", image: "https://skimo.in/cdn/shop/files/rs_w_464_h_1120.webp?v=1728819186"},
+    {name: "Snowboard", image: "https://images-cdn.ubuy.co.in/63751113c2a9f55cfc4bd3d8-stauber-summit-snowboard-binding.jpg"},
+    {name: "Badminton Racket", image: "https://rukminim2.flixcart.com/image/850/1000/l0o6nbk0/kit/s/l/6/double-shaft-badminton-racket-pack-of-2-with-10-piece-plasic-original-imagcek3hhcsmgz7.jpeg?q=20&crop=false"},
+    {name: "Volleyball", image: "https://m.media-amazon.com/images/I/61qv35tohEL.jpg"},
+    {name: "Table Tennis", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSX7Ba9drcoJpZlitXFQmy-DLRvXbRsRkXpew&s"},
+    {name: "Wrestling Mat", image: "https://m.media-amazon.com/images/I/51qe4hM9cTL.jpg"},
+    {name: "Archery Set", image: "https://m.media-amazon.com/images/I/71lya+itVvL.jpg"}
+  ],
+  automotive:
+  [
+  {name: "Car Tire", image: "https://images.jdmagicbox.com/quickquotes/images_main/ultrac-vorti-235-35-zr19-271946158-r2ui15wp.png"},
+  {name: "Car Battery", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR56VBO3fZ0hVES6rin1_ufv34_6wCwzn_HdA&s"},
+  {name: "Engine Oil", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWNPlSrRfodpQ0_GWA39S1JParGDCvLokf_A&s"},
+  {name: "Car Cover", image: "https://m.media-amazon.com/images/I/61dOG6XQ5vL._AC_UF1000,1000_QL80_.jpg"},
+  {name: "Car Seat Cover", image: "https://elegantautoretail.com/cdn/shop/products/8_8ac76ea5-c912-4e62-8b7b-b56807f144e6_1000x.jpg?v=1690966481"},
+  {name: "Steering Wheel Cover", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThiG13Cj-CG0HwdWBI0CGufWGZqPkf5yNNVg&s"},
+  {name: "Car Vacuum Cleaner", image: "https://m.media-amazon.com/images/I/61yImhjFllL._AC_UF1000,1000_QL80_.jpg"},
+  {name: "Dash Cam", image: "https://m.media-amazon.com/images/I/51ZugP8QNkL._AC_UF1000,1000_QL80_.jpg"},
+  {name: "Jump Starter", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBPu9zRHRXgzPXUqHtH1uumMBjy7cPsOdiyg&s"},
+  {name: "GPS Navigator", image: "https://m.media-amazon.com/images/I/61A9r5k7egL.jpg"},
+  {name: "Car Wax", image: "https://m.media-amazon.com/images/I/71kfr2w4SaL.jpg"},
+  {name: "Car Jack", image: "https://m.media-amazon.com/images/I/61FNFOpoRJL.jpg"},
+  {name: "Motor Oil Filter", image: "https://boodmo.com/media/cache/catalog_part/images/parts/153e142bf3f19bcc19f80eb84557aa22.webp"},
+  {name: "Windshield Wipers", image: "https://m.media-amazon.com/images/I/513JAcJJGWL.jpg"},
+  {name: "Car Air Freshener", image: "https://images-cdn.ubuy.co.in/670998d76ce57475603cb692-ceeniu-smart-car-air-fresheners-new.jpg"},
+  {name: "Brake Pads", image: "https://m.media-amazon.com/images/I/410Ft5wChjL._AC_UF1000,1000_QL80_.jpg"},
+  {name: "Car Polish", image: "https://m.media-amazon.com/images/I/81ZjJXFKeYL.jpg"},
+  {name: "Tool Kit", image: "https://m.media-amazon.com/images/I/41nexu1cmeL._SR290,290_.jpg"},
+  {name: "Roof Rack", image: "https://m.media-amazon.com/images/I/61S9AeyUhgL.jpg"},
+  {name: "LED Headlights", image: "https://www.allextreme.in/media/catalog/product/b/0/b0c5qvn966_1.jpg"}
+]
+,
+  furniture: [
+  
+  {name: "Sofa", image: "https://images.pexels.com/photos/1866149/pexels-photo-1866149.jpeg"},
+  {name: "Dining Table", image: "https://images.pexels.com/photos/298842/pexels-photo-298842.jpeg"},
+  {name: "Bed", image: "https://images.pexels.com/photos/1027508/pexels-photo-1027508.jpeg"},
+  {name: "Chair", image: "https://images.pexels.com/photos/963486/pexels-photo-963486.jpeg"},
+  {name: "Wardrobe", image: "https://images.pexels.com/photos/271743/pexels-photo-271743.jpeg"},
+  {name: "Bookshelf", image: "https://images.pexels.com/photos/276583/pexels-photo-276583.jpeg"},
+  {name: "Coffee Table", image: "https://images.pexels.com/photos/276583/pexels-photo-276583.jpeg"},
+  {name: "TV Stand", image: "https://images.pexels.com/photos/713049/pexels-photo-713049.jpeg"},
+  {name: "Desk", image: "https://images.pexels.com/photos/271743/pexels-photo-271743.jpeg"},
+  {name: "Armchair", image: "https://images.pexels.com/photos/276583/pexels-photo-276583.jpeg"},
+  {name: "Nightstand", image: "https://images.pexels.com/photos/298842/pexels-photo-298842.jpeg"},
+  {name: "Recliner", image: "https://images.pexels.com/photos/276583/pexels-photo-276583.jpeg"},
+  {name: "Stool", image: "https://images.pexels.com/photos/963486/pexels-photo-963486.jpeg"},
+  {name: "Bench", image: "https://images.pexels.com/photos/1866149/pexels-photo-1866149.jpeg"},
+  {name: "Cabinet", image: "https://images.pexels.com/photos/271743/pexels-photo-271743.jpeg"},
+  {name: "Dresser", image: "https://images.pexels.com/photos/298842/pexels-photo-298842.jpeg"},
+  {name: "Mirror", image: "https://images.pexels.com/photos/276583/pexels-photo-276583.jpeg"},
+  {name: "Bar Stool", image: "https://images.pexels.com/photos/963486/pexels-photo-963486.jpeg"},
+  {name: "Chest", image: "https://images.pexels.com/photos/271743/pexels-photo-271743.jpeg"},
+  {name: "Shelving Unit", image: "https://images.pexels.com/photos/276583/pexels-photo-276583.jpeg"}
+
+  ],
+  toys: [
+  {name: "Toy Car", image: "https://m.media-amazon.com/images/I/81ap+We87nL.jpg"},
+  {name: "Doll", image: "https://rukminim2.flixcart.com/image/850/1000/xif0q/doll-doll-house/a/o/e/30cm-1ps-of-girls-look-durable-fashion-princess-doll-hand-legs-original-imagzfbnjmphufqd.jpeg?q=20&crop=false"},
+  {name: "Puzzle", image: "https://m.media-amazon.com/images/I/813-UN6GBBL.jpg"},
+  {name: "Action Figure", image: "https://rukminim2.flixcart.com/image/850/1000/kz8qsnk0/action-figure/1/k/6/10-new-superman-batman-7-action-figures-mega-pack-movie-cartoon-original-imagbaq583myb4rd.jpeg?q=90&crop=false"},
+  {name: "Board Game", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaWb-IETS_CIi7RUmhlaFsbbj22m7cnJdlNw&s"},
+  {name: "Building Blocks", image: "https://m.media-amazon.com/images/I/71mnsQS0n1L.jpg"},
+  {name: "Stuffed Animal", image: "https://m.media-amazon.com/images/I/51cQZbJt6tL.jpg"},
+  {name: "Train Set", image: "https://instamart-media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,h_600/NI_CATALOG/IMAGES/CIW/2024/11/7/f6daaac5-8a61-44ca-8e8b-c2d75380ac0f_600408_1.png"},
+  {name: "RC Car", image: "https://electrobotic.in/cdn/shop/files/rccar4x4remotecontrolcaroffroader4wheelsgreencolour.jpg?v=1694520949"},
+  {name: "Yo-yo", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQA3JGKvc-MGq99affpH-TG2b3OoyTodKxpNQ&s"},
+  {name: "Kite", image: "https://m.media-amazon.com/images/I/61ruE1Y4lmL.jpg"},
+  {name: "Lego Set", image: "https://m.media-amazon.com/images/I/81mdwcKwhUL.jpg"},
+  {name: "Slime", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdW1gkCVZQpTr604bWqR-DLTqRdIe9yXILMw&s"},
+  {name: "Water Gun", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtEMRWXLKgGoFrplgPZ6jP8SDvZTnux3WmbA&s"},
+  {name: "Play Kitchen", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsrh9aZT6nVuMlN37THMoHCa9akf2HEHkdHQ&s"},
+  {name: "Marbles", image: "https://m.media-amazon.com/images/I/61eQWwZj1SL._AC_UF1000,1000_QL80_.jpgg"},
+  {name: "Bubble Maker", image: "https://m.media-amazon.com/images/I/51oO7ePyVJL._AC_UF1000,1000_QL80_.jpg"},
+  {name: "Toy Robot", image: "https://m.media-amazon.com/images/I/71xxDNZKl5L._AC_UF1000,1000_QL80_.jpg"},
+  {name: "Jump Rope", image: "https://m.media-amazon.com/images/I/61KdPg2rXML._AC_UF894,1000_QL80_.jpg"},
+  {name: "Sandbox Set", image: "https://myplayroom.com.au/cdn/shop/files/81tqJ9sJEnL._AC_SL1500_749x700.jpg?v=1715728300"}
+]
+,
+  beauty:[
+  {name: "Lipstick", image: "https://m.media-amazon.com/images/I/51whWS0xHkL._AC_UF1000,1000_QL80_.jpg"},
+  {name: "Foundation", image: "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/original/000000000494284003/_9rMdPhGlD-000000000494284003_1.jpg"},
+  {name: "Mascara", image: "https://m.media-amazon.com/images/I/71DTwHnZ6HL.jpg"},
+  {name: "Blush", image: "https://m.media-amazon.com/images/I/916dHALgdBL.jpg"},
+  {name: "Eyeliner", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvF5lmm9tegHq3-Td0vL-QekF4M0LfmWC4rQ&s"},
+  {name: "Face Serum", image: "https://m.media-amazon.com/images/I/51eTNtZmQwL._AC_UF1000,1000_QL80_.jpg"},
+  {name: "Moisturizer", image: "https://m.media-amazon.com/images/I/6147cwOvHBL._AC_UF1000,1000_QL80_.jpg"},
+  {name: "Perfume", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0x43W6lLnlwDGfZHDaTmY1lVb0SUi6f47KQ&s"},
+  {name: "Nail Polish", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJE-ncf29gBxf932u9qSTZUjVl3JM3rcdLmA&s"},
+  {name: "Hair Dryer", image: "https://assets.myntassets.com/dpr_1.5,q_60,w_400,c_limit,fl_progressive/assets/images/27990398/2024/3/29/2c73e0a2-f780-4762-adb6-866fe659bd751711704890996-Beardo-Studio-Professional-Tornado-Hair-Dryer-2000-W-For-Men-1.jpg"},
+  {name: "Face Mask", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_sWCCAIR1QIuqVcA2Ymzl5jUCbUnSsvp-NQ&s"},
+  {name: "Body Lotion", image: "https://m.media-amazon.com/images/I/51QtN8cihaL.jpg"},
+  {name: "Makeup Brush Set", image: "https://assets.myntassets.com/dpr_1.5,q_60,w_400,c_limit,fl_progressive/assets/images/2024/AUGUST/14/20mnwkmZ_28f538518bb64db6af79ecec4f20d703.jpg"},
+  {name: "BB Cream", image: "https://m.media-amazon.com/images/I/61dhZNYpwuL.jpg"},
+  {name: "Concealer", image: "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/original/000000000494284080/vebxPzKzgh-000000000494284080_1.jpg"},
+  {name: "Shampoo", image: "https://assets.myntassets.com/h_1440,q_100,w_1080/v1/assets/images/19202684/2025/1/22/b46be9b6-5dc9-413f-96d0-858575fee1eb1737535355413-LOreal-Paris-Hyaluron-Moisture-72H-Moisture-Filling-Shampoo--1.jpg"},
+  {name: "Conditioner", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAcXtEx-29FRxUL6fS7F7F8FskrBtbhwsIEQ&s"},
+  {name: "Body Wash", image: "https://m.media-amazon.com/images/I/419w4PBH11L.jpg"},
+  {name: "Face Cleanser", image: "https://m.media-amazon.com/images/I/51Ge6+ihfhL.jpg"},
+  {name: "Hair Straightener", image: "https://cdn.tirabeauty.com/v2/billowing-snowflake-434234/tira-p/wrkr/products/pictures/item/free/original/1034880/bcPDfTFKXT-1034880_1.jpg"}
+]
+,
+  grocery: [
+  {name: "Apples", image: "https://images.pexels.com/photos/102104/pexels-photo-102104.jpeg"},
+  {name: "Bananas", image: "https://images.pexels.com/photos/208450/pexels-photo-208450.jpeg"},
+  {name: "Bread", image: "https://images.pexels.com/photos/2434/bread-food-healthy-breakfast.jpg"},
+  {name: "Milk", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThvSiqUMhuMYNWoImXBUdTezg3ljI_5kIGHw&s"},
+  {name: "Eggs", image: "https://www.shutterstock.com/image-photo/thirty-eggs-packed-over-white-260nw-124337245.jpg"},
+  {name: "Chicken", image: "https://images.pexels.com/photos/65175/pexels-photo-65175.jpeg"},
+  {name: "Rice", image: "https://img.cdnx.in/389805/india-gate-feast-rozanna-aged-basmati-rice-1723576298538.jpeg?width=600&format=webp"},
+  {name: "Pasta", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRXMuK8ZDsahRKlMduYgQzYrruvqvH3oI6ZA&s"},
+  {name: "Cheese", image: "https://m.media-amazon.com/images/I/61+AzywctoL._AC_UF894,1000_QL80_.jpg"},
+  {name: "Tomatoes", image: "https://images.pexels.com/photos/8390/food-wood-tomatoes.jpg"},
+  {name: "Potatoes", image: "https://www.jiomart.com//images/product/240x240/590003309/potato-1-kg-pack-product-images-o590003309-p590003309-0-202409251835.jpg"},
+  {name: "Onions", image: "https://image.made-in-china.com/2f0j00KQoqdYMtabpa/Fresh-Red-Onions-8cm-and-up-Packing-in-10kg-Bag.jpg"},
+  {name: "Carrots", image: "https://5.imimg.com/data5/SELLER/Default/2021/10/LR/HZ/MB/41416384/carrot-sticks-250-g-500x500.jpeg"},
+  {name: "Cereal", image: "https://5.imimg.com/data5/UY/FL/QP/SELLER-13348816/cereals-packaging-material-pouches.png"},
+  {name: "Yogurt", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRaJotBeSbENPAWxWha4belysgrVbbMv8qGjQ&s"},
+  {name: "Juice", image: "https://5.imimg.com/data5/FW/XJ/VA/SELLER-30759087/real-mixed-fruit-juice.jpg"},
+  {name: "Butter", image: "https://5.imimg.com/data5/EJ/MQ/MY-8438667/salted-butter.jpg"},
+  {name: "Tea", image: "https://images.pexels.com/photos/1417945/pexels-photo-1417945.jpeg"},
+  {name: "Coffee", image: "https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg"},
+  {name: "Honey", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCEBdP4Yeo1KiGr-BkOyYlSREjAgL7nlJWaA&s"}
+]
+,
+  pets: [
+  {name: "Dog Food", image: "https://m.media-amazon.com/images/I/81+CZeIwRdL.jpg"},
+  {name: "Cat Food", image: "https://www.bigbasket.com/media/uploads/p/l/30005143_20-whiskas-dry-cat-food-ocean-fish-flavour-for-adult-cats-1-year.jpg"},
+  {name: "Bird Cage", image: "https://cdn.dotpe.in/longtail/item_thumbnails/5882897/bN1sDlAQ.webp"},
+  {name: "Pet Bed", image: "https://www.ikea.com/in/en/images/products/utsadd-pet-bed-light-grey__1239831_pe919128_s5.jpg"},
+  {name: "Leash", image: "https://m.media-amazon.com/images/I/61YAwL8yGRL._AC_UF1000,1000_QL80_.jpg"},
+  {name: "Pet Collar", image: "https://in.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-dog-collar-pm--GI1215_PM2_Front%20view.jpg"},
+  {name: "Fish Tank", image: "https://m.media-amazon.com/images/I/51pdkgo2CmL.jpg"},
+  {name: "Dog Toys", image: "https://rukminim3.flixcart.com/image/850/1000/kgjqefk0/pet-toy/n/d/8/pa-ty-226-e-pet-needs-original-imafwrmfhme9chhf.jpeg?q=90&crop=false"},
+  {name: "Cat Toys", image: "https://images-cdn.ubuy.co.in/64390ef4b14d6967c1314792-lasocuhoo-cat-toys-kitten-cat-ball-toys.jpg"},
+  {name: "Pet Shampoo", image: "https://www.jiomart.com/images/product/original/rvwt4njsns/tick-flea-dog-shampoo-ditch-to-itch-dog-shampoo-for-pomeranian-puppy-rottweiler-adult-german-shepherd-labrador-and-golden-retriever-medicated-pet-shampoo-for-dogs-500ml-product-images-orvwt4njsns-p606063416-0-202405110833.jpg?im=Resize=(420,420)"},
+  {name: "Pet Carrier", image: "https://images-eu.ssl-images-amazon.com/images/I/71VSQQfjplL._AC_UL375_SR375,375_.jpg"},
+  {name: "Rabbit Hutch", image: "https://m.media-amazon.com/images/I/712BSK4Y0ZL.jpg"},
+  {name: "Bird Seed", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSar7ukS9DmD1Lz6GFX1YDbiXwSRxdUiU7qMg&s"},
+  {name: "Aquarium Decorations", image: "https://m.media-amazon.com/images/I/61Mzg2e2O0L.jpg"},
+  {name: "Dog Treats", image: "https://m.media-amazon.com/images/I/61P7v9r9OPL.AC_SX500.jpg"},
+  {name: "Cat Litter", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxdxi6u-8izl3LyYoIzXSd91HxEsO0jN2VfA&s"},
+  {name: "Cat Tree", image: "https://rukminim2.flixcart.com/image/850/1000/kwzap3k0/cat-tree/x/o/5/cat-318-blue-flipkart-perfect-homes-studio-138-2-original-imag9jfmgnjap8eq.jpeg?q=90&crop=false"},
+  {name: "Pet Bowls", image: "https://m.media-amazon.com/images/I/71MRo6RGPwL.jpg"},
+  {name: "Pet Clothes", image: "https://m.media-amazon.com/images/I/71opostVjRL.jpg"},
+  {name: "Pet Vitamins", image: "https://m.media-amazon.com/images/I/71PHcykYXfL.jpg"}
+], 
+
+
+};
+
+
+
+  let cart = [];
+
+  function showHome() {
+    showSection('home');
+  }
+
+  function showSection(id) {
+    ['home', 'products', 'about', 'contact', 'cartPage'].forEach(sec => document.getElementById(sec).classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+    if (id === 'cartPage') renderCart();
+  }
+
+  function renderCategories() {
+    const container = document.getElementById('home');
+    container.innerHTML = '';
+    categories.forEach(cat => {
+      const div = document.createElement('div');
+      div.className = 'category-card';
+      div.innerHTML = `<img src="${cat.img}" alt="${cat.name}" /><h3>${cat.name}</h3>`;
+      div.onclick = () => selectCategory(cat.id);
+      container.appendChild(div);
+    });
+  }
+
+  function selectCategory(categoryId) {
+    if (!products[categoryId]) return;
+    showSection('products');
+    const grid = document.getElementById('products');
+    grid.innerHTML = '';
+    products[categoryId].forEach(prod => {
+      const div = document.createElement('div');
+      div.className = 'product-card';
+      div.innerHTML = `
+        <img src="${prod.image}" alt="${prod.name}" />
+        <h4>${prod.name}</h4>
+        <button class="btn" onclick="shopNow('${prod.name}')">Shop Now</button>
+        <button class="btn" onclick="addToCart('${prod.name}', '${prod.image}')">Add to Cart</button>
+      `;
+      grid.appendChild(div);
+    });
+  }
+
+  function shopNow(name) {
+    alert(`Thank you for choosing ${name}!. Your order will be delivered soon.`);
+  }
+
+  function addToCart(name, image) {
+    cart.push({ name, image });
+    document.getElementById('cartCount').innerText = cart.length;
+    alert(`${name} added to cart!`);
+  }
+
+  function renderCart() {
+    const container = document.getElementById('cartItems');
+    container.innerHTML = '';
+    cart.forEach((item, index) => {
+      container.innerHTML += `
+        <div class="cart-item">
+          <img src="${item.image}" alt="${item.name}" />
+          <h4>${item.name}</h4>
+          <button onclick="removeFromCart(${index})">Remove</button>
+        </div>
+      `;
+    });
+    document.getElementById('totalItems').innerText = cart.length;
+  }
+
+  function removeFromCart(index) {
+    cart.splice(index, 1);
+    renderCart();
+    document.getElementById('cartCount').innerText = cart.length;
+  }
+
+  function openLogin() {
+    const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+    loginModal.show();
+  }
+
+  function signup() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    if (username && password) {
+      users.push({ username, password });
+      localStorage.setItem('users', JSON.stringify(users));
+      alert('Signup successful! Now you can log in.');
+      bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+    } else {
+      alert('Please enter valid credentials.');
+    }
+  }
+
+  function login() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const found = users.find(u => u.username === username && u.password === password);
+    if (found) {
+      localStorage.setItem('currentUser', username);
+      currentUser = username;
+      alert(`Welcome back, ${username}!`);
+      bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+    } else {
+      alert('Invalid credentials. Please signup.');
+    }
+  }
+
+  function logOut() {
+    localStorage.removeItem('currentUser');
+    currentUser = null;
+    alert('Logged out successfully.');
+  }
+
+  // Initial
+  renderCategories();
+  showHome();
+</script>
+
+</body>
+</html>
